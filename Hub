@@ -1,0 +1,124 @@
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+local entryFrame = Instance.new("Frame", screenGui)
+entryFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+entryFrame.Size = UDim2.new(0.3, 0, 0.15, 0)
+entryFrame.Position = UDim2.new(0.35, 0, 0.42, 0)
+
+local textBox = Instance.new("TextBox", entryFrame)
+textBox.PlaceholderText = "Enter Key"
+textBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+textBox.Size = UDim2.new(0.7, 0, 0.5, 0)
+textBox.Position = UDim2.new(0.05, 0, 0.25, 0)
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.Font = Enum.Font.SourceSans
+textBox.TextSize = 20
+
+local submitButton = Instance.new("TextButton", entryFrame)
+submitButton.Text = "Submit"
+submitButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+submitButton.Size = UDim2.new(0.2, 0, 0.5, 0)
+submitButton.Position = UDim2.new(0.77, 0, 0.25, 0)
+submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitButton.Font = Enum.Font.SourceSansBold
+submitButton.TextSize = 18
+
+local UserInputService = game:GetService("UserInputService")
+
+-- Function to make the GUI element draggable
+local function makeDraggable(frame, dragTarget)
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = dragTarget.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            dragTarget.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+-- Function to create the Mono Hub GUI with specific button functionalities
+local function createMonoHub()
+    local monoHub = Instance.new("Frame", screenGui)
+    monoHub.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    monoHub.Size = UDim2.new(0.4, 0, 0.4, 0)
+    monoHub.Position = UDim2.new(0.3, 0, 0.3, 0)
+    monoHub.Name = "Mono Hub"
+    
+    -- Title bar
+    local titleBar = Instance.new("TextLabel", monoHub)
+    titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    titleBar.Size = UDim2.new(1, 0, 0.1, 0)
+    titleBar.Position = UDim2.new(0, 0, 0, 0)
+    titleBar.Text = "Mono Hub"
+    titleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleBar.Font = Enum.Font.SourceSansBold
+    titleBar.TextSize = 18
+    makeDraggable(titleBar, monoHub)
+
+-- Define button functionalities
+local buttonFunctions = {
+    ["Infinite Yield"] = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end,
+    ["Anti-Cheat Bypass"] = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Dizzysky1/ThisShitNice23udw9haduhadijnadnkjadsnjadsnjkadnk/main/huuhuddhauijnadnjadnadsnjadsjndasjnasdjnda'))() end,
+    ["Unnamed ESP"] = function() pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua'))() end) end
+}
+
+    -- Buttons within Mono Hub
+    local buttonNames = {"Infinite Yield", "Anti-Cheat Bypass", "Unnamed ESP"}
+    for i, name in ipairs(buttonNames) do
+        local button = Instance.new("TextButton", monoHub)
+        button.Text = name
+        button.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        button.Size = UDim2.new(0.8, 0, 0.15, 0)
+        button.Position = UDim2.new(0.1, 0, 0.1 + (0.18 * i), 0)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Font = Enum.Font.SourceSans
+        button.TextSize = 18
+        button.MouseButton1Click:Connect(buttonFunctions[name])
+    end
+end
+
+local function checkKey()
+    if textBox.Text == "MonoHubBeta" then
+        print("Correct Key Entered")
+        entryFrame.Visible = false
+        createMonoHub()
+    else
+        print("Incorrect Key Entered")
+        textBox.Text = ""
+        textBox.PlaceholderText = "Incorrect key, try again"
+    end
+end
+
+textBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        checkKey()
+    end
+end)
+
+submitButton.MouseButton1Click:Connect(checkKey)
